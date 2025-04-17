@@ -182,3 +182,7 @@ Common issues include:
 - Region configuration
 
 For detailed guidance on resolving these issues, see the troubleshooting guide.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

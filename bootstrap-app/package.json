@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "Minimal CDK app for bootstrapping",
   "main": "app.js",
+  "license": "MIT",
+  "private": true,
   "dependencies": {
     "aws-cdk-lib": "^2.0.0"
   }

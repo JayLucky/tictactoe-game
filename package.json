@@ -1,6 +1,8 @@
 {
   "name": "tictactoe-cdk-deploy",
   "version": "0.1.0",
+  "description": "AWS CDK project to deploy a TicTacToe game to an S3 bucket",
+  "license": "MIT",
   "bin": {
     "tictactoe-cdk-deploy": "bin/tictactoe-cdk-deploy.js"
   },
@@ -30,5 +32,17 @@
   "dependencies": {
     "aws-cdk-lib": "^2.189.0",
     "constructs": "^10.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/tictactoe-cdk-deploy"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "s3",
+    "tictactoe",
+    "game",
+    "deployment"
+  ]
 }
