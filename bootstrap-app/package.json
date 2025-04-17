@@ -1,0 +1,9 @@
+{
+  "name": "bootstrap-app",
+  "version": "1.0.0",
+  "description": "Minimal CDK app for bootstrapping",
+  "main": "app.js",
+  "dependencies": {
+    "aws-cdk-lib": "^2.0.0"
+  }
+}

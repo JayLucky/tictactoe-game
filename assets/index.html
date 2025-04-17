@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    #scoreboard {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+    #message {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+      justify-content: center;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      cursor: pointer;
+    }
+    .cell.x {
+      color: red;
+      background-color: rgba(255, 0, 0, 0.15);
+    }
+    .cell.o {
+      color: blue;
+      background-color: rgba(0, 0, 255, 0.15);
+    }
+    @keyframes slam {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    .cell.slam {
+      animation: slam 0.4s ease forwards;
+    }
+    #newGameBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #confetti-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    @keyframes confetti-fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(300px) rotate(360deg); opacity: 0; }
+    }
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe</h1>
+  <div id="scoreboard">
+    X (Red): <span id="x-score">0</span> | O (Blue): <span id="o-score">0</span> | Draws: <span id="draw-score">0</span>
+  </div>
+  <div id="message">Current Player: <span id="current-player">X</span></div>
+  <div id="board"></div>
+  <button id="newGameBtn" disabled>New Game</button>
+  <div id="confetti-container"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const boardElement = document.getElementById('board');
+      const xScoreEl = document.getElementById('x-score');
+      const oScoreEl = document.getElementById('o-score');
+      const messageEl = document.getElementById('message');
+      const currentPlayerEl = document.getElementById('current-player');
+      const newGameBtn = document.getElementById('newGameBtn');
+      const drawScoreEl = document.getElementById('draw-score');
+      const confettiContainer = document.getElementById('confetti-container');
+
+      let board = Array(9).fill(null);
+      let currentPlayer = 'X';
+      let scores = { X: 0, O: 0, D: 0 };
+      let gameOver = false;
+
+      const winCombos = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+
+      function initBoard() {
+        boardElement.innerHTML = '';
+        for (let i = 0; i < 9; i++) {
+          const cell = document.createElement('div');
+          cell.classList.add('cell');
+          cell.dataset.index = i;
+          cell.addEventListener('click', handleCellClick);
+          boardElement.appendChild(cell);
+        }
+      }
+
+      function handleCellClick(e) {
+        const idx = e.target.dataset.index;
+        if (gameOver || board[idx]) return;
+        board[idx] = currentPlayer;
+        e.target.textContent = currentPlayer;
+        e.target.classList.add(currentPlayer.toLowerCase());
+        e.target.classList.add('slam');
+        e.target.addEventListener('animationend', () => e.target.classList.remove('slam'), { once: true });
+        if (checkWin(currentPlayer)) {
+          messageEl.textContent = `Player ${currentPlayer} wins!`;
+          scores[currentPlayer]++;
+          updateScores();
+          gameOver = true;
+          newGameBtn.disabled = false;
+          
+          // Add a delay before hiding the board and showing confetti
+          setTimeout(() => {
+            boardElement.style.display = 'none';
+            generateConfetti();
+          }, 1500); // 1.5 second delay
+        } else if (board.every(cell => cell)) {
+          messageEl.textContent = `It's a draw!`;
+          scores.D++;
+          updateScores();
+          gameOver = true;
+          newGameBtn.disabled = false;
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          currentPlayerEl.textContent = currentPlayer;
+          messageEl.textContent = `Current Player: ${currentPlayer}`;
+        }
+      }
+
+      function checkWin(player) {
+        return winCombos.some(combo => combo.every(idx => board[idx] === player));
+      }
+
+      function updateScores() {
+        xScoreEl.textContent = scores.X;
+        oScoreEl.textContent = scores.O;
+        drawScoreEl.textContent = scores.D;
+      }
+
+      function generateConfetti() {
+        const colors = ['#f94144', '#f3722c', '#f9c74f', '#90be6d', '#43aa8b', '#577590'];
+        for (let i = 0; i < 100; i++) {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+          const size = Math.random() * 6 + 4;
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.left = `${Math.random() * window.innerWidth}px`;
+          confetti.style.animation = `confetti-fall ${2 + Math.random()}s ease-out ${Math.random()}s forwards`;
+          confettiContainer.appendChild(confetti);
+        }
+      }
+
+      function resetGame() {
+        confettiContainer.innerHTML = '';
+        boardElement.style.display = 'grid';
+        board = Array(9).fill(null);
+        gameOver = false;
+        currentPlayer = 'X';
+        currentPlayerEl.textContent = currentPlayer;
+        messageEl.textContent = `Current Player: ${currentPlayer}`;
+        newGameBtn.disabled = true;
+        boardElement.querySelectorAll('.cell').forEach(cell => {
+          cell.textContent = '';
+          cell.classList.remove('x','o','slam');
+        });
+      }
+
+      newGameBtn.addEventListener('click', resetGame);
+
+      initBoard();
+    });
+  </script>
+</body>
+</html>
